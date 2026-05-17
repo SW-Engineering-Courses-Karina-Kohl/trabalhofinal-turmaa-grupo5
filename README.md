@@ -4,4 +4,5 @@
 - Nunca comitar diretamente na main, sempre comitar em uma branch e abrir um pull request.
 - Para um PR levar merge, deve ter ao menos uma revisão de outra pessoa que não seja o criador do PR.
 - Código de LLM *sempre* deve ser verificado antes de abrir um PR.
-- Commits devem implementar uma mudança por commit (por exemplo: "implementar X", "corrigir Y") e ter um título de commit que descreve essa mudança de maneira apropriada, seguindo o estilo padrão a ser definido.
+- Commits devem implementar uma mudança por commit (por exemplo: "implementar X", "corrigir Y") e ter um título de commit que descreve essa mudança de maneira apropriada, seguindo o estilo de [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/)
+- Código deve ser escrito em inglês.
