@@ -8,18 +8,24 @@ import java.util.Objects;
 public class ConfigFileReader {
     public ConfigFileReader() {
     }
-    public DiscardParameter loadDiscardParameter() {
+
+    private static final String CONFIG_FILE_PATH = "config_alimentos.csv";
+
+    public DiscardParameter loadDiscardParameter(String path) {
         try {
+            if(path == null || path.isEmpty()) {
+                path = CONFIG_FILE_PATH; // Use default path if none provided
+            }
             // The file path is obtained from the classpath, ensuring it works in both development and production environments.
             String filePath = Paths.get(
                     Objects.requireNonNull(
-                            getClass().getClassLoader().getResource("config_alimentos.csv")).toURI())
+                            getClass().getClassLoader().getResource(path)).toURI())
                     .toString();
             DiscardParameter discardParameter = readParameterFromFile(filePath);
             return discardParameter;
         } catch (Exception e) {
             throw new RuntimeException("Error reading configuration file " +
-        e.getMessage(), e);
+            e.getMessage(), e);
         }
     }
 
@@ -32,16 +38,16 @@ public class ConfigFileReader {
             br.readLine(); // skip header
             String line;
             while ((line = br.readLine()) != null) {
-                String[] fields = line.split(",");
+                String[] fields = line.split(",", -1);
                 if (fields[0].equals("margem_seguranca_dias")) {
-                    if(fields[1].isEmpty()) {
+                    if(fields[1].trim().isEmpty()) {
                         throw new RuntimeException("Value for margem_seguranca_dias cannot be empty");
                     }else{
                         discardParameter.setMarginOfSafetyDays(Integer.parseInt(fields[1]));
                     }
                 }else if (fields[0].equals("fator_descarte_percentual")) {
-                    if(fields[1].isEmpty()) {
-                        throw new RuntimeException("Value for fator_descarte_percentual cannot be empty");
+                    if(fields[1].trim().isEmpty() || Double.parseDouble(fields[1]) < 0) {
+                        throw new RuntimeException("Value for fator_descarte_percentual cannot be empty or negative");
                     }else{
                         discardParameter.setDiscardFactorPercentage(Double.parseDouble(fields[1]));
                     }
