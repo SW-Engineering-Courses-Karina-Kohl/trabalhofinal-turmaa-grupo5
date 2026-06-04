@@ -12,6 +12,10 @@ public class ConfigFileReader {
     private static final String CONFIG_FILE_PATH = "config_alimentos.csv";
 
     public DiscardParameter loadDiscardParameter(String path) {
+        /**
+         * This method reads the configuration file and extracts the parameters for discard calculation.
+         * Pass null or an empty string to use the default path defined in CONFIG_FILE_PATH.
+         */
         try {
             if(path == null || path.isEmpty()) {
                 path = CONFIG_FILE_PATH; // Use default path if none provided
