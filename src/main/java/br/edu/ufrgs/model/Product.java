@@ -8,7 +8,7 @@ public class Product {
     private String category;
     private LocalDate expiryDate;
     private double priceCost;
-    private String stockStatus;
+    private StockStatus stockStatus;
     private double predictedLoss;
 
     public Product(int id, String prodName, String category, LocalDate expiryDate, double priceCost){
@@ -51,11 +51,11 @@ public class Product {
         return priceCost;
     }
 
-    public String getStockStatus() {
+    public StockStatus getStockStatus() {
         return stockStatus;
     }
 
-    public void setStockStatus(String stockStatus) {
+    public void setStockStatus(StockStatus stockStatus) {
         this.stockStatus = stockStatus;
     }
 
