@@ -1,9 +1,11 @@
 package br.edu.ufrgs.model;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ConfigFileReaderTest {
     @Test
+    @DisplayName("Loads discard parameters from a valid config file")
     public void testConfigFileReaderSuccess() {
         ConfigFileReader configReader = new ConfigFileReader();
         DiscardParameter discardParameter = configReader.loadDiscardParameter("test/config_file_valid_test.csv"); 
@@ -15,6 +17,7 @@ public class ConfigFileReaderTest {
 
 
     @Test
+    @DisplayName("Throws when the config file does not exist")
     public void testConfigFileReaderMissingFile() {
         ConfigFileReader configReader = new ConfigFileReader();
         Exception exception = assertThrows(RuntimeException.class, () -> {
@@ -26,6 +29,7 @@ public class ConfigFileReaderTest {
     }       
 
     @Test
+    @DisplayName("Throws when margem_seguranca_dias has an empty value")
     public void testConfigFileReaderEmptyField() {
         ConfigFileReader configReader = new ConfigFileReader();
         Exception exception = assertThrows(RuntimeException.class, () -> {
@@ -38,6 +42,7 @@ public class ConfigFileReaderTest {
     }
 
     @Test
+    @DisplayName("Throws when fator_descarte_percentual is empty or negative")
     public void testConfigFileReaderInvalidContent() {
         ConfigFileReader configReader = new ConfigFileReader();
         Exception exception = assertThrows(RuntimeException.class, () -> {
