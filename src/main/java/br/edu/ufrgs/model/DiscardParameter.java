@@ -8,7 +8,7 @@ public class DiscardParameter {
 
     public DiscardParameter(int marginOfSafetyDays, double discardFactorPercentage) {
         this.marginOfSafetyDays = marginOfSafetyDays;
-        this.discardFactorPercentage = discardFactorPercentage;
+        setDiscardFactorPercentage(discardFactorPercentage);
     }
 
     public int getMarginOfSafetyDays() {
@@ -24,6 +24,9 @@ public class DiscardParameter {
     }
 
     public void setDiscardFactorPercentage(double discardFactorPercentage) {
+        if (discardFactorPercentage < 0 || discardFactorPercentage > 1) {
+            throw new IllegalArgumentException("discardFactorPercentage must be between 0 and 1");
+        }
         this.discardFactorPercentage = discardFactorPercentage;
     }
 
