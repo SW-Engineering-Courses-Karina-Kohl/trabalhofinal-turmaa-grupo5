@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class InventoryFileWriterTest {
 
     private static final String HEADER =
-            "id,produto,categoria,data_validade,preco_custo,status_estoque,prejuizo_estimado";
+            "id;produto;categoria;data_validade;preco_custo;status_estoque;prejuizo_estimado";
 
     // Builds a new product with status and predicted loss already set for testing
     private Product buildProduct(int id, String name, String category, String expiryDate, double priceCost, StockStatus status, double predictedLoss) {
@@ -36,7 +36,7 @@ public class InventoryFileWriterTest {
 
         String csv = new InventoryFileWriter().export(List.of(product));
 
-        assertEquals(HEADER + "\n1,Presunto,Frios,2026-03-30,32.00,VENCIDO,32.00", csv);
+        assertEquals(HEADER + "\n1;Presunto;Frios;2026-03-30;32,00;VENCIDO;32,00", csv);
     }
 
     @Test
@@ -46,7 +46,7 @@ public class InventoryFileWriterTest {
 
         String csv = new InventoryFileWriter().export(List.of(product));
 
-        assertEquals(HEADER + "\n2,Mussarela,Laticinios,2026-04-05,45.00,ALERTA,0.00", csv);
+        assertEquals(HEADER + "\n2;Mussarela;Laticinios;2026-04-05;45,00;ALERTA;0,00", csv);
     }
 
     @Test
@@ -56,17 +56,17 @@ public class InventoryFileWriterTest {
 
         String csv = new InventoryFileWriter().export(List.of(product));
 
-        assertEquals(HEADER + "\n3,Molho de Tomate,Mercearia,2026-06-15,10.00,OK,0.00", csv);
+        assertEquals(HEADER + "\n3;Molho de Tomate;Mercearia;2026-06-15;10,00;OK;0,00", csv);
     }
 
     @Test
-    @DisplayName("Monetary values are formatted with a dot and two decimals")
-    public void testAmountIsFormattedWithDotAndTwoDecimals() {
+    @DisplayName("Monetary values are formatted with a comma and two decimals")
+    public void testAmountIsFormattedWithCommaAndTwoDecimals() {
         Product product = buildProduct(4, "Item", "Cat", "2026-01-01", 5, StockStatus.EXPIRED, 5);
 
         String csv = new InventoryFileWriter().export(List.of(product));
 
-        assertEquals(HEADER + "\n4,Item,Cat,2026-01-01,5.00,VENCIDO,5.00", csv);
+        assertEquals(HEADER + "\n4;Item;Cat;2026-01-01;5,00;VENCIDO;5,00", csv);
     }
 
     @Test
@@ -81,9 +81,9 @@ public class InventoryFileWriterTest {
         String csv = new InventoryFileWriter().export(products);
 
         String expected = HEADER + "\n"
-                + "501,Mussarela,Laticinios,2026-04-05,45.00,ALERTA,0.00\n"
-                + "502,Presunto,Frios,2026-03-30,32.00,VENCIDO,32.00\n"
-                + "503,Molho de Tomate,Mercearia,2026-06-15,10.00,OK,0.00";
+                + "501;Mussarela;Laticinios;2026-04-05;45,00;ALERTA;0,00\n"
+                + "502;Presunto;Frios;2026-03-30;32,00;VENCIDO;32,00\n"
+                + "503;Molho de Tomate;Mercearia;2026-06-15;10,00;OK;0,00";
 
         assertEquals(expected, csv);
     }
