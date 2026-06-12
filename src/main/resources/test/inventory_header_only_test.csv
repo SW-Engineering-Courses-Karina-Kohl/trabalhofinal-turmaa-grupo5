@@ -1,1 +1,1 @@
-id,produto,categoria,data_validade,preco_custo
+id;produto;categoria;data_validade;preco_custo

@@ -1,67 +1,142 @@
 package br.edu.ufrgs.model;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.Objects;
+
+import java.io.InputStream;
+import java.util.List;
+import java.util.regex.Pattern;
 
 public class ConfigFileReader {
+    private static final String DEFAULT_CONFIG_RESOURCE_PATH = "config_alimentos.csv";
+    private static final Pattern PT_BR_NUMBER = Pattern.compile("-?\\d+(,\\d+)?");
+    private static final String[] EXPECTED_HEADER = {
+            "parametro", "valor"
+    };
+
+    private final CsvFileReader csvFileReader;
+
     public ConfigFileReader() {
+        this(new CsvFileReader());
     }
 
-    private static final String CONFIG_FILE_PATH = "config_alimentos.csv";
+    ConfigFileReader(CsvFileReader csvFileReader) {
+        this.csvFileReader = csvFileReader;
+    }
 
-    public DiscardParameter loadDiscardParameter(String path) {
-        /**
-         * This method reads the configuration file and extracts the parameters for discard calculation.
-         * Pass null or an empty string to use the default path defined in CONFIG_FILE_PATH.
-         */
-        try {
-            if(path == null || path.isEmpty()) {
-                path = CONFIG_FILE_PATH; // Use default path if none provided
-            }
-            // The file path is obtained from the classpath, ensuring it works in both development and production environments.
-            String filePath = Paths.get(
-                    Objects.requireNonNull(
-                            getClass().getClassLoader().getResource(path)).toURI())
-                    .toString();
-            DiscardParameter discardParameter = readParameterFromFile(filePath);
-            return discardParameter;
-        } catch (Exception e) {
-            throw new RuntimeException("Error reading configuration file " +
-            e.getMessage(), e);
+    public DiscardParameter loadDiscardParameter(String resourcePath) {
+        String resolvedPath = resourcePath;
+        if (resolvedPath == null || resolvedPath.isBlank()) {
+            resolvedPath = DEFAULT_CONFIG_RESOURCE_PATH;
         }
+
+        InputStream inputStream = getClass().getClassLoader().getResourceAsStream(resolvedPath);
+        if (inputStream == null) {
+            throw new RuntimeException("Configuration file not found: " + resolvedPath);
+        }
+
+        return loadDiscardParameter(inputStream);
     }
 
-    private static DiscardParameter readParameterFromFile(String filePath)
-            throws IOException {
+    DiscardParameter loadDiscardParameter(InputStream inputStream) {
+        if (inputStream == null) {
+            throw new RuntimeException("Configuration input stream cannot be null");
+        }
 
-        BufferedReader br = new BufferedReader(new FileReader(filePath));
+        List<CsvFileReader.CsvRow> rows = csvFileReader.readRows(inputStream);
+        if (rows.isEmpty()) {
+            throw new RuntimeException("Configuration file is empty");
+        }
+
+        validateHeader(rows.get(0).fields());
+
         DiscardParameter discardParameter = new DiscardParameter();
-        try {
-            br.readLine(); // skip header
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] fields = line.split(",", -1);
-                if (fields[0].equals("margem_seguranca_dias")) {
-                    if(fields[1].trim().isEmpty()) {
-                        throw new RuntimeException("Value for margem_seguranca_dias cannot be empty");
-                    }else{
-                        discardParameter.setMarginOfSafetyDays(Integer.parseInt(fields[1]));
-                    }
-                }else if (fields[0].equals("fator_descarte_percentual")) {
-                    if(fields[1].trim().isEmpty() || Double.parseDouble(fields[1]) < 0) {
-                        throw new RuntimeException("Value for fator_descarte_percentual cannot be empty or negative");
-                    }else{
-                        discardParameter.setDiscardFactorPercentage(Double.parseDouble(fields[1]));
-                    }
-                } else {
-                    throw new RuntimeException("Unknown parameter: " + fields[0]);
-                }
+        boolean foundMarginOfSafetyDays = false;
+        boolean foundDiscardFactorPercentage = false;
+
+        for (int i = 1; i < rows.size(); i++) {
+            CsvFileReader.CsvRow row = rows.get(i);
+            List<String> fields = row.fields();
+            int lineNumber = row.lineNumber();
+
+            if (fields.size() != EXPECTED_HEADER.length) {
+                throw new RuntimeException("Invalid configuration row at line " + lineNumber);
             }
-        } finally {
-            br.close();
+
+            String parameter = requiredField(fields.get(0), "parametro", lineNumber);
+            String value = requiredField(fields.get(1), "valor", lineNumber);
+
+            if ("margem_seguranca_dias".equals(parameter)) {
+                discardParameter.setMarginOfSafetyDays(parseMarginOfSafetyDays(value, lineNumber));
+                foundMarginOfSafetyDays = true;
+            } else if ("fator_descarte_percentual".equals(parameter)) {
+                discardParameter.setDiscardFactorPercentage(parseDiscardFactorPercentage(value, lineNumber));
+                foundDiscardFactorPercentage = true;
+            } else {
+                throw new RuntimeException("Unknown parameter at line " + lineNumber + ": " + parameter);
+            }
         }
+
+        if (!foundMarginOfSafetyDays) {
+            throw new RuntimeException("Missing configuration parameter: margem_seguranca_dias");
+        }
+        if (!foundDiscardFactorPercentage) {
+            throw new RuntimeException("Missing configuration parameter: fator_descarte_percentual");
+        }
+
         return discardParameter;
+    }
+
+    private static void validateHeader(List<String> fields) {
+        if (fields.size() != EXPECTED_HEADER.length) {
+            throw new RuntimeException("Invalid configuration header");
+        }
+
+        for (int i = 0; i < EXPECTED_HEADER.length; i++) {
+            if (!EXPECTED_HEADER[i].equals(fields.get(i))) {
+                throw new RuntimeException("Invalid configuration header");
+            }
+        }
+    }
+
+    private static String requiredField(String value, String fieldName, int lineNumber) {
+        String trimmedValue = value.trim();
+        if (trimmedValue.isEmpty()) {
+            throw new RuntimeException("Field " + fieldName + " cannot be empty at line " + lineNumber);
+        }
+        return trimmedValue;
+    }
+
+    private static int parseMarginOfSafetyDays(String value, int lineNumber) {
+        try {
+            int marginOfSafetyDays = Integer.parseInt(value);
+            if (marginOfSafetyDays < 0) {
+                throw new RuntimeException("Field valor cannot be negative at line " + lineNumber);
+            }
+            return marginOfSafetyDays;
+        } catch (NumberFormatException e) {
+            throw new RuntimeException("Field valor must be a valid integer at line " + lineNumber, e);
+        }
+    }
+
+    private static double parseDiscardFactorPercentage(String value, int lineNumber) {
+        double discardFactorPercentage = parsePtBrNumber(value, "valor", lineNumber);
+        if (discardFactorPercentage < 0) {
+            throw new RuntimeException("Field valor cannot be negative at line " + lineNumber);
+        }
+        return discardFactorPercentage;
+    }
+
+    private static double parsePtBrNumber(String value, String fieldName, int lineNumber) {
+        if (!PT_BR_NUMBER.matcher(value).matches()) {
+            throw new RuntimeException("Field " + fieldName + " must be a valid PT-BR number at line " + lineNumber);
+        }
+
+        try {
+            double number = Double.parseDouble(value.replace(',', '.'));
+            if (!Double.isFinite(number)) {
+                throw new RuntimeException("Field " + fieldName + " must be finite at line " + lineNumber);
+            }
+            return number;
+        } catch (NumberFormatException e) {
+            throw new RuntimeException("Field " + fieldName + " must be a valid PT-BR number at line " + lineNumber, e);
+        }
     }
 }
