@@ -84,11 +84,9 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <title>Auditoria de Desperdício de Estoque</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined&amp;display=swap" rel="stylesheet"/>
+    <script src="js/tailwind.js"></script>
     <style>
-        body { font-family: "Inter", sans-serif; }
+        body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-900 min-h-screen flex flex-col">
@@ -112,7 +110,7 @@
             <!-- ERROR -->
             <% if (error != null) { %>
             <div class="bg-red-100 text-red-800 p-4 rounded-lg border border-red-300 flex items-center gap-2">
-                <span class="material-symbols-outlined">error</span>
+                <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
                 <span class="text-sm"><%= error %></span>
             </div>
             <% } %>
@@ -137,21 +135,21 @@
             <section class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm flex flex-col gap-2">
                     <div class="flex items-center gap-2 text-red-600">
-                        <span class="material-symbols-outlined">warning</span>
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
                         <span class="text-sm font-semibold">Itens Vencidos</span>
                     </div>
                     <span class="text-3xl font-bold"><%= totalExpired %></span>
                 </div>
                 <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm flex flex-col gap-2">
                     <div class="flex items-center gap-2 text-yellow-600">
-                        <span class="material-symbols-outlined">schedule</span>
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
                         <span class="text-sm font-semibold">Itens em Alerta</span>
                     </div>
                     <span class="text-3xl font-bold"><%= totalAlerts %></span>
                 </div>
                 <div class="bg-white rounded-lg border border-gray-200 p-6 shadow-sm flex flex-col gap-2">
                     <div class="flex items-center gap-2 text-gray-800">
-                        <span class="material-symbols-outlined">attach_money</span>
+                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.79-2.7 1.79-2.06 0-2.87-.92-2.98-2.1h-2.2c.12 2.19 1.76 3.42 3.68 3.83V21h3v-2.15c1.95-.37 3.5-1.5 3.5-3.55 0-2.84-2.43-3.81-4.7-4.4z"/></svg>
                         <span class="text-sm font-semibold">Prejuízo Total Estimado</span>
                     </div>
                     <span class="text-3xl font-bold text-red-600"><%= money(totalLoss) %></span>
@@ -166,7 +164,7 @@
                     <h2 class="text-xl font-semibold">Resultado da Auditoria</h2>
                     <%-- RF04: depende de um endpoint de download no servlet (ex.: GET /exporta) --%>
                     <a href="exporta" class="border border-gray-400 text-gray-800 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-100 transition-colors flex items-center gap-2">
-                        <span class="material-symbols-outlined text-sm">download</span>
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
                         Exportar CSV
                     </a>
                 </div>
@@ -209,7 +207,7 @@
 
             <!-- Empty State -->
             <div class="bg-white rounded-lg border border-gray-200 flex flex-col items-center justify-center text-center py-16 gap-4">
-                <span class="material-symbols-outlined text-5xl text-gray-400">upload_file</span>
+                <svg class="w-12 h-12 text-gray-400" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/></svg>
                 <p class="text-base text-gray-600">Envie um arquivo de inventário para iniciar a auditoria</p>
             </div>
 
