@@ -1,2 +1,2 @@
-codigo,produto,categoria,data_validade,preco_custo
-501,Mussarela,Laticinios,2026-04-05,45.00
+codigo;produto;categoria;data_validade;preco_custo
+501;Mussarela;Laticinios;2026-04-05;45,00
