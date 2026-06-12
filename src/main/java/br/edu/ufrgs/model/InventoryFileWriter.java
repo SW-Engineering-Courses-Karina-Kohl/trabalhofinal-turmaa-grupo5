@@ -31,7 +31,7 @@ public class InventoryFileWriter {
 
     // Formats a monetary value with pt-BR locale (example: 32,00)
     private static String formatAmount(double amount) {
-        return String.format(new Locale("pt", "BR"), "%.2f", amount);
+        return String.format(Locale.forLanguageTag("pt-BR"), "%.2f", amount);
     }
 
     // Maps stock status enum to ptbr
