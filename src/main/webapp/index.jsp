@@ -157,8 +157,7 @@
             <section class="flex flex-col gap-4">
                 <div class="flex justify-between items-center">
                     <h2 class="text-xl font-semibold"><%= msg.getString("results.title") %></h2>
-                    <%-- RF04: depende de um endpoint de download no servlet (ex.: GET /exporta) --%>
-                    <a href="exporta" class="border border-gray-400 text-gray-800 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-100 transition-colors flex items-center gap-2">
+                    <a href="download" class="border border-gray-400 text-gray-800 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-100 transition-colors flex items-center gap-2">
                         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
                         <%= msg.getString("results.export") %>
                     </a>
