@@ -1,6 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.List" %>
-<%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.Locale" %>
 <%@ page import="java.time.LocalDate" %>
 <%@ page import="java.time.format.DateTimeFormatter" %>
@@ -48,30 +47,6 @@
     String lang = (String) session.getAttribute("lang");
     if (lang == null) lang = "pt";
     ResourceBundle msg = ResourceBundle.getBundle("i18n.messages", new Locale(lang));
-
-    // MOCK TEMPORARIO --------------------------------------
-    if (request.getParameter("preview") != null
-            && request.getAttribute("produtos") == null && request.getAttribute("erro") == null) {
-        List<Product> mock = new ArrayList<>();
-
-        Product m1 = new Product(501, "Mussarela", "Laticinios", LocalDate.parse("2026-04-05"), 45.00);
-        m1.setStockStatus(StockStatus.EXPIRED);
-        m1.setPredictedLoss(45.00);
-        mock.add(m1);
-
-        Product m2 = new Product(502, "Presunto", "Frios", LocalDate.parse("2026-06-14"), 32.00);
-        m2.setStockStatus(StockStatus.ALERT);
-        m2.setPredictedLoss(0.00);
-        mock.add(m2);
-
-        Product m3 = new Product(503, "Molho de Tomate", "Mercearia", LocalDate.parse("2026-12-15"), 10.00);
-        m3.setStockStatus(StockStatus.OK);
-        m3.setPredictedLoss(0.00);
-        mock.add(m3);
-
-        request.setAttribute("produtos", mock);
-    }
-    // -------------------------------------------------------
 
     @SuppressWarnings("unchecked")
     List<Product> products = (List<Product>) request.getAttribute("produtos");
